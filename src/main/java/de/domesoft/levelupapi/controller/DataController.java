@@ -3,6 +3,7 @@ package de.domesoft.levelupapi.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.domesoft.levelupapi.PasswordHash;
+import de.domesoft.levelupapi.Task;
 import de.domesoft.levelupapi.entity.Level;
 import de.domesoft.levelupapi.entity.LevelRepository;
 import de.domesoft.levelupapi.entity.User;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Optional;
 
+@SuppressWarnings("unused")
 @RestController
 public class DataController {
     @Autowired
@@ -30,6 +33,10 @@ public class DataController {
     @PostMapping("/data")
     public Level postLevelData(@RequestBody String data) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
+        JSONObject ob = new JSONObject(data);
+        Optional<User> optionalUser = userRepository.findById(ob.getLong("user"));
+        User user = optionalUser.get();
+        ob.remove("user");
         Level level = mapper.readValue(data, Level.class);
         levelRepository.save(level);
         return level;
@@ -56,6 +63,19 @@ public class DataController {
         }
         User user = mapper.readValue(ob.toString(), User.class);
         userRepository.save(user);
+    }
+    @PostMapping("/setexp")
+    public Level setExp(@RequestBody String data) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JSONObject ob = new JSONObject(data);
+        Task task = ob.getEnum(Task.class, "task");
+        ob.remove("task");
+        System.out.println(ob.getJSONObject("user").toString());
+        ob.getJSONObject("user").put("passwordHash", PasswordHash.hash(ob.getJSONObject("user").getString("passwordHash")));
+        Level level = levelRepository.getLevel(ob.getJSONObject("user").getString("userName"));
+        level.setExp(level.getExp() + task.getExp());
+        levelRepository.save(level);
+        return level;
     }
 
 }
