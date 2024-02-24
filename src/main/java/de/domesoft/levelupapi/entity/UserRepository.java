@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT password_hash FROM user WHERE user_name = ?1", nativeQuery = true)
     String getPasswordHash(String name);
+    @Query(value = "SELECT * FROM user WHERE user_name = ?1", nativeQuery = true)
+    User getUserByName(String name);
 }

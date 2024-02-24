@@ -34,10 +34,12 @@ public class DataController {
     public Level postLevelData(@RequestBody String data) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JSONObject ob = new JSONObject(data);
-        Optional<User> optionalUser = userRepository.findById(ob.getLong("user"));
-        User user = optionalUser.get();
+        JSONObject userobject = ob.getJSONObject("user");
+        User user = userRepository.getUserByName(userobject.getString("userName"));
         ob.remove("user");
-        Level level = mapper.readValue(data, Level.class);
+        JSONObject uo = new JSONObject(mapper.writeValueAsString(user));
+        ob.put("user", uo);
+        Level level = mapper.readValue(ob.toString(), Level.class);
         levelRepository.save(level);
         return level;
     }
