@@ -2,6 +2,7 @@ package de.domesoft.levelupapi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.domesoft.levelupapi.DataParser;
 import de.domesoft.levelupapi.PasswordHash;
 import de.domesoft.levelupapi.Task;
 import de.domesoft.levelupapi.entity.Level;
@@ -26,22 +27,14 @@ public class DataController {
     LevelRepository levelRepository;
     @Autowired
     UserRepository userRepository;
+    DataParser dataParser = new DataParser();
     @GetMapping("/data")
-    public List<Level> getData(){
-        return levelRepository.findAll();
+    public JSONObject getData(@RequestBody String data)throws Exception{
+        return dataParser.getLevelByName(data);
     }
     @PostMapping("/data")
-    public Level postLevelData(@RequestBody String data) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        JSONObject ob = new JSONObject(data);
-        JSONObject userobject = ob.getJSONObject("user");
-        User user = userRepository.getUserByName(userobject.getString("userName"));
-        ob.remove("user");
-        JSONObject uo = new JSONObject(mapper.writeValueAsString(user));
-        ob.put("user", uo);
-        Level level = mapper.readValue(ob.toString(), Level.class);
-        levelRepository.save(level);
-        return level;
+    public JSONObject postLevelData(@RequestBody String data) throws Exception {
+        return dataParser.parseNewLevel(data);
     }
     @GetMapping("/login")
     public String login(@RequestBody String data)throws NoSuchAlgorithmException {
@@ -68,16 +61,23 @@ public class DataController {
     }
     @PostMapping("/setexp")
     public Level setExp(@RequestBody String data) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
+        /*ObjectMapper mapper = new ObjectMapper();
         JSONObject ob = new JSONObject(data);
         Task task = ob.getEnum(Task.class, "task");
         ob.remove("task");
         System.out.println(ob.getJSONObject("user").toString());
         ob.getJSONObject("user").put("passwordHash", PasswordHash.hash(ob.getJSONObject("user").getString("passwordHash")));
-        Level level = levelRepository.getLevel(ob.getJSONObject("user").getString("userName"));
+        List<Level> levelList = levelRepository.getLevel(ob.getJSONObject("user").getString("userName"));
+        Level level = null;
+        for(Level l : levelList){
+            if(l.getName().equals(ob.getString("name"))){
+                level = l;
+            }
+        }
         level.setExp(level.getExp() + task.getExp());
         levelRepository.save(level);
-        return level;
+        return level;*/
+        return null;
     }
 
 }
