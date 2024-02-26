@@ -5,6 +5,7 @@ import de.domesoft.levelupapi.entity.Level;
 import de.domesoft.levelupapi.entity.LevelRepository;
 import de.domesoft.levelupapi.entity.User;
 import de.domesoft.levelupapi.entity.UserRepository;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,13 +29,14 @@ public class DataParser {
         levelJson.remove("user");
         return levelJson;
     }
-    public JSONObject getLevelByName(String data) throws Exception{
-        JSONObject dataObject = new JSONObject(data);
-        List<Level> levelList = levelRepository.getLevel(dataObject.getString("userName"));
-        JSONObject levelJson = new JSONObject();
+    public JSONArray getLevelByName(List<Level> levelList) throws Exception{
+        JSONArray returnObject = new JSONArray();
         for(Level level : levelList){
-            levelJson.put("level", mapper.writeValueAsString(level));
+            JSONObject temp = new JSONObject(mapper.writeValueAsString(level));
+            temp.remove("user");
+            returnObject.put(temp);
         }
-        return levelJson;
+        return returnObject;
+
     }
 }
