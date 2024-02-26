@@ -19,7 +19,7 @@ public class DataController {
     UserRepository userRepository;
     @Autowired
     DataParser dataParser;
-    @GetMapping("/getLevelData")
+    @PostMapping("/getLevelData")
     public String getLevelData(@RequestBody String data) throws Exception {
         return dataParser.getLevelsByUser(data).toString();
     }
