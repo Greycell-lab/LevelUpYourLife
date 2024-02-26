@@ -3,11 +3,11 @@ package de.domesoft.levelupapi;
 public enum Task {
     VACUUM(250),
     COOKING(300);
-    private final int exp;
+    private final long exp;
     private Task(int exp){
         this.exp = exp;
     }
-    public int getExp(){
+    public long getExp(){
         return exp;
     }
 }

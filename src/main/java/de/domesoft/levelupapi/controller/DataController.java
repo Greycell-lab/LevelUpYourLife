@@ -36,8 +36,8 @@ public class DataController {
         return dataParser.postNewUser(data);
     }
     @PostMapping("/setexp")
-    public Level setExp(@RequestBody String data) {
-        return null;
+    public String setExp(@RequestBody String data) throws Exception {
+        return dataParser.setExp(data).toString();
     }
 
 }

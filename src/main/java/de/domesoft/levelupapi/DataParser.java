@@ -68,6 +68,33 @@ public class DataParser {
         String user = dataObject.getString("user_name");
         String password = dataObject.getString("password");
         return userRepository.loginPassed(user, PasswordHash.hash(password)) == 1;
+    }
+    public JSONObject setExp(String data) throws Exception {
+        JSONObject dataObject = new JSONObject(data);
+        String user = dataObject.getString("user_name");
+        String password = dataObject.getString("password");
+        String character = dataObject.getString("character");
+        Task task = dataObject.getEnum(Task.class, "task");
+        JSONObject levelObject;
+        if(userRepository.loginPassed(user, PasswordHash.hash(password)) == 1){
+            List<Level> levelList = levelRepository.getLevel(user);
+            Level level = null;
+            for(Level l : levelList){
+                if(l.getName().equals(character)){
+                    level = l;
+                }
+            }
+            if(level != null) {
+                level.setExp(level.getExp() + task.getExp());
+                levelRepository.save(level);
+                levelObject = new JSONObject(mapper.writeValueAsString(level));
+                levelObject.remove("user");
+                return levelObject;
+            }
+            else return new JSONObject();
+        }else{
+            return new JSONObject();
+        }
 
     }
 }
