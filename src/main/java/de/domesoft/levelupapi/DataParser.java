@@ -21,8 +21,8 @@ public class DataParser {
     public JSONObject postNewLevel(String data) throws Exception {
         JSONObject dataObject = new JSONObject(data);
         JSONObject userObject = dataObject.getJSONObject("user");
-        String user = userObject.getString("userName");
-        String password = userObject.getString("passwordHash");
+        String user = userObject.getString("user_name");
+        String password = userObject.getString("password");
         if(userRepository.loginPassed(user, PasswordHash.hash(password)) == 1){
             Level level = mapper.readValue(dataObject.toString(), Level.class);
             User tempUser = userRepository.getUserByName(user);
@@ -36,10 +36,10 @@ public class DataParser {
     }
     public boolean postNewUser(String data) throws Exception {
         JSONObject dataObject = new JSONObject(data);
-        String user = dataObject.getString("userName");
-        String password = dataObject.getString("passwordHash");
+        String user = dataObject.getString("user_name");
+        String password = dataObject.getString("password");
         if(userRepository.userExists(user) == 0){
-            dataObject.put("passwordHash", PasswordHash.hash(password));
+            dataObject.put("password", PasswordHash.hash(password));
             userRepository.save(mapper.readValue(dataObject.toString(), User.class));
             return true;
         }else{

@@ -31,11 +31,11 @@ public class DataController {
     public boolean login(@RequestBody String data)throws Exception {
         return dataParser.login(data);
     }
-    @PostMapping("/adduser")
+    @PostMapping("/addUser")
     public boolean addUser(@RequestBody String data) throws Exception {
         return dataParser.postNewUser(data);
     }
-    @PostMapping("/setexp")
+    @PostMapping("/setExp")
     public String setExp(@RequestBody String data) throws Exception {
         return dataParser.setExp(data).toString();
     }
