@@ -2,8 +2,6 @@ package de.domesoft.levelupapi.controller;
 
 import de.domesoft.levelupapi.dataparse.DataParser;
 import de.domesoft.levelupapi.task.Task;
-import de.domesoft.levelupapi.entity.LevelRepository;
-import de.domesoft.levelupapi.entity.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +13,6 @@ import java.util.List;
 @SuppressWarnings("unused")
 @RestController
 public class DataController {
-    @Autowired
-    LevelRepository levelRepository;
-    @Autowired
-    UserRepository userRepository;
     @Autowired
     DataParser dataParser;
     @PostMapping("/getLevelData")

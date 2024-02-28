@@ -3,7 +3,6 @@ package de.domesoft.levelupapi.tools;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 
 public class PasswordHash {
     public static String hash(String password) throws NoSuchAlgorithmException {

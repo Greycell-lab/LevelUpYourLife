@@ -1,7 +1,7 @@
 package de.domesoft.levelupapi.entity;
 
 import jakarta.persistence.*;
-
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "level")
 public class Level {
