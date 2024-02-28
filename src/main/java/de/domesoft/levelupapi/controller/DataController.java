@@ -45,5 +45,8 @@ public class DataController {
     public List<Task> getTasks(){
         return dataParser.getTaskList();
     }
-
+    @PostMapping("/addParent")
+    public boolean addParent(@RequestBody String data) throws Exception {
+        return dataParser.postNewParent(data);
+    }
 }

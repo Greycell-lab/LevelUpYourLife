@@ -12,19 +12,15 @@ public class Level {
     private Long level;
     private Long exp;
     private String pet;
-
-    public String getPet() {
-        return pet;
-    }
-
-    public void setPet(String pet) {
-        this.pet = pet;
-    }
-
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-
+    public String getPet() {
+        return pet;
+    }
+    public void setPet(String pet) {
+        this.pet = pet;
+    }
     public User getUser() {
         return user;
     }
