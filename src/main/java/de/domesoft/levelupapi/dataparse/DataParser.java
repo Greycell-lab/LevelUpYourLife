@@ -1,5 +1,6 @@
 package de.domesoft.levelupapi.dataparse;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.domesoft.levelupapi.tools.PasswordHash;
 import de.domesoft.levelupapi.task.Task;
@@ -9,12 +10,16 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Component
 public class DataParser {
+    private final String USERNAME = "user_name";
+    private final String USER = "user";
+    private final String PASSWORD = "password";
     ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UserRepository userRepository;
@@ -23,29 +28,29 @@ public class DataParser {
     @Autowired
     ParentRepository parentRepository;
 
-    public JSONObject postNewLevel(String data) throws Exception {
+    public JSONObject postNewLevel(String data) throws NoSuchAlgorithmException, JsonProcessingException {
         JSONObject dataObject = new JSONObject(data);
-        JSONObject userObject = dataObject.getJSONObject("user");
-        String user = userObject.getString("user_name");
-        String password = userObject.getString("password");
+        JSONObject userObject = dataObject.getJSONObject(USER);
+        String user = userObject.getString(USERNAME);
+        String password = userObject.getString(PASSWORD);
         if (userRepository.loginPassed(user, PasswordHash.hash(password)) == 1) {
             Level level = mapper.readValue(dataObject.toString(), Level.class);
             User tempUser = userRepository.getUserByName(user);
             level.setUser(tempUser);
             levelRepository.save(level);
-            dataObject.remove("user");
+            dataObject.remove(USER);
             return dataObject;
         } else {
             return new JSONObject();
         }
     }
 
-    public boolean postNewUser(String data) throws Exception {
+    public boolean postNewUser(String data) throws NoSuchAlgorithmException, JsonProcessingException {
         JSONObject dataObject = new JSONObject(data);
-        String user = dataObject.getString("user_name");
-        String password = dataObject.getString("password");
+        String user = dataObject.getString(USERNAME);
+        String password = dataObject.getString(PASSWORD);
         if (userRepository.userExists(user) == 0) {
-            dataObject.put("password", PasswordHash.hash(password));
+            dataObject.put(PASSWORD, PasswordHash.hash(password));
             userRepository.save(mapper.readValue(dataObject.toString(), User.class));
             return true;
         } else {
@@ -53,16 +58,16 @@ public class DataParser {
         }
     }
 
-    public JSONArray getLevelsByUser(String data) throws Exception {
+    public JSONArray getLevelsByUser(String data) throws NoSuchAlgorithmException, JsonProcessingException {
         JSONObject dataObject = new JSONObject(data);
-        String user = dataObject.getString("user_name");
-        String password = dataObject.getString("password");
+        String user = dataObject.getString(USERNAME);
+        String password = dataObject.getString(PASSWORD);
         JSONArray levelArray = new JSONArray();
         if (userRepository.loginPassed(user, PasswordHash.hash(password)) == 1) {
             List<Level> levelList = levelRepository.getLevel(user);
             for (Level level : levelList) {
                 JSONObject temp = new JSONObject(mapper.writeValueAsString(level));
-                temp.remove("user");
+                temp.remove(USER);
                 levelArray.put(temp);
             }
             return levelArray;
@@ -71,17 +76,17 @@ public class DataParser {
         }
     }
 
-    public boolean login(String data) throws Exception {
+    public boolean login(String data) throws NoSuchAlgorithmException {
         JSONObject dataObject = new JSONObject(data);
-        String user = dataObject.getString("user_name");
-        String password = dataObject.getString("password");
+        String user = dataObject.getString(USERNAME);
+        String password = dataObject.getString(PASSWORD);
         return userRepository.loginPassed(user, PasswordHash.hash(password)) == 1;
     }
 
-    public JSONObject setExp(String data) throws Exception {
+    public JSONObject setExp(String data) throws NoSuchAlgorithmException, JsonProcessingException {
         JSONObject dataObject = new JSONObject(data);
-        String user = dataObject.getString("user_name");
-        String password = dataObject.getString("password");
+        String user = dataObject.getString(USERNAME);
+        String password = dataObject.getString(PASSWORD);
         String character = dataObject.getString("character");
         Task task = dataObject.getEnum(Task.class, "task");
         JSONObject levelObject;
@@ -97,7 +102,7 @@ public class DataParser {
                 level.setExp(level.getExp() + task.getExp());
                 levelRepository.save(level);
                 levelObject = new JSONObject(mapper.writeValueAsString(level));
-                levelObject.remove("user");
+                levelObject.remove(USER);
                 return levelObject;
             } else return new JSONObject();
         } else {
@@ -109,19 +114,19 @@ public class DataParser {
         return new ArrayList<>(Arrays.asList(Task.class.getEnumConstants()));
     }
 
-    public boolean postNewParent(String data) throws Exception {
+    public boolean postNewParent(String data) throws NoSuchAlgorithmException, JsonProcessingException {
         JSONObject dataObject = new JSONObject(data);
-        String parent = dataObject.getString("user_name");
-        String password = dataObject.getString("password");
-        JSONObject child = dataObject.getJSONObject("user");
-        String childPassword = child.getString("password");
+        String parent = dataObject.getString(USERNAME);
+        String password = dataObject.getString(PASSWORD);
+        JSONObject child = dataObject.getJSONObject(USER);
+        String childPassword = child.getString(PASSWORD);
         if (login(child.toString()) && parentRepository.parentExists(parent) == 0) {
-            dataObject.put("password", PasswordHash.hash(password));
-            child.put("password", PasswordHash.hash(childPassword));
-            dataObject.remove("user");
-            dataObject.put("user", child);
+            dataObject.put(PASSWORD, PasswordHash.hash(password));
+            child.put(PASSWORD, PasswordHash.hash(childPassword));
+            dataObject.remove(USER);
+            dataObject.put(USER, child);
             Parent parentObject = mapper.readValue(dataObject.toString(), Parent.class);
-            parentObject.setUser(userRepository.getUserByName(child.getString("user_name")));
+            parentObject.setUser(userRepository.getUserByName(child.getString(USERNAME)));
             parentRepository.save(parentObject);
             return true;
         } else {
