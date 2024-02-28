@@ -1,4 +1,4 @@
-package de.domesoft.levelupapi;
+package de.domesoft.levelupapi.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

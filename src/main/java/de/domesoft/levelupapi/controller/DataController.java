@@ -1,7 +1,7 @@
 package de.domesoft.levelupapi.controller;
 
-import de.domesoft.levelupapi.DataParser;
-import de.domesoft.levelupapi.Task;
+import de.domesoft.levelupapi.dataparse.DataParser;
+import de.domesoft.levelupapi.task.Task;
 import de.domesoft.levelupapi.entity.LevelRepository;
 import de.domesoft.levelupapi.entity.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

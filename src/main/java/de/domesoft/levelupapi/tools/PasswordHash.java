@@ -1,4 +1,4 @@
-package de.domesoft.levelupapi;
+package de.domesoft.levelupapi.tools;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

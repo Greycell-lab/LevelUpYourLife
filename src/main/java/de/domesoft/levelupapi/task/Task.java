@@ -1,4 +1,4 @@
-package de.domesoft.levelupapi;
+package de.domesoft.levelupapi.task;
 
 public enum Task {
     VACUUM(250),

@@ -1,6 +1,8 @@
-package de.domesoft.levelupapi;
+package de.domesoft.levelupapi.dataparse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.domesoft.levelupapi.tools.PasswordHash;
+import de.domesoft.levelupapi.task.Task;
 import de.domesoft.levelupapi.entity.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
