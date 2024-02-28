@@ -1,7 +1,7 @@
 package de.domesoft.levelupapi.controller;
 
 import de.domesoft.levelupapi.DataParser;
-import de.domesoft.levelupapi.entity.Level;
+import de.domesoft.levelupapi.Task;
 import de.domesoft.levelupapi.entity.LevelRepository;
 import de.domesoft.levelupapi.entity.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @SuppressWarnings("unused")
 @RestController
@@ -38,6 +40,10 @@ public class DataController {
     @PostMapping("/setExp")
     public String setExp(@RequestBody String data) throws Exception {
         return dataParser.setExp(data).toString();
+    }
+    @GetMapping("/getTasks")
+    public List<Task> getTasks(){
+        return dataParser.getTaskList();
     }
 
 }

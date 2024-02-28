@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 @Component
 public class DataParser {
@@ -95,6 +97,8 @@ public class DataParser {
         }else{
             return new JSONObject();
         }
-
+    }
+    public List<Task> getTaskList(){
+        return new ArrayList<>(Arrays.asList(Task.class.getEnumConstants()));
     }
 }

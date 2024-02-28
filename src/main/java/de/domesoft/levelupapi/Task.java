@@ -2,7 +2,10 @@ package de.domesoft.levelupapi;
 
 public enum Task {
     VACUUM(250),
-    COOKING(300);
+    COOKING(300),
+    CLEANUP(250),
+    WASHUP(300);
+
     private final long exp;
     private Task(int exp){
         this.exp = exp;
