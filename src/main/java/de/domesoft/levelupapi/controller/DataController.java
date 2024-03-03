@@ -27,7 +27,7 @@ public class DataController {
     }
     @GetMapping("/login")
     public boolean login(@RequestBody String data)throws NoSuchAlgorithmException {
-        return dataParser.login(data);
+        return dataParser.userLogin(data);
     }
     @PostMapping("/addUser")
     public boolean addUser(@RequestBody String data) throws NoSuchAlgorithmException, JsonProcessingException {
@@ -44,5 +44,13 @@ public class DataController {
     @PostMapping("/addParent")
     public boolean addParent(@RequestBody String data) throws NoSuchAlgorithmException, JsonProcessingException {
         return dataParser.postNewParent(data);
+    }
+    @PostMapping("/startTask")
+    public String startTask(@RequestBody String data) throws NoSuchAlgorithmException {
+        return dataParser.startTask(data);
+    }
+    @PostMapping("/acceptTask")
+    public String acceptTask(@RequestBody String data) throws NoSuchAlgorithmException{
+        return dataParser.getUserTaskList(data);
     }
 }

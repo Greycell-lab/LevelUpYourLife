@@ -1,6 +1,10 @@
 package de.domesoft.levelupapi.entity;
 
+import de.domesoft.levelupapi.task.Task;
 import jakarta.persistence.*;
+
+import java.util.List;
+
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "parent")
@@ -13,6 +17,16 @@ public class Parent {
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+    private List<Task> taskList;
+
+    public List<Task> getTaskList() {
+        return taskList;
+    }
+
+    public void setTaskList(List<Task> taskList) {
+        this.taskList = taskList;
+    }
+
     public Long getId() {
         return id;
     }

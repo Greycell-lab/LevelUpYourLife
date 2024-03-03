@@ -20,6 +20,9 @@ public class DataParser {
     private final String USERNAME = "user_name";
     private final String USER = "user";
     private final String PASSWORD = "password";
+    private final String CHARACTER = "character";
+    private final String TASK = "task";
+    private final String PARENT = "parent";
     ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UserRepository userRepository;
@@ -76,19 +79,25 @@ public class DataParser {
         }
     }
 
-    public boolean login(String data) throws NoSuchAlgorithmException {
+    public boolean userLogin(String data) throws NoSuchAlgorithmException {
         JSONObject dataObject = new JSONObject(data);
         String user = dataObject.getString(USERNAME);
         String password = dataObject.getString(PASSWORD);
         return userRepository.loginPassed(user, PasswordHash.hash(password)) == 1;
+    }
+    public boolean parentLogin(String data) throws NoSuchAlgorithmException {
+        JSONObject dataObject = new JSONObject(data);
+        String user = dataObject.getString(USERNAME);
+        String password = dataObject.getString(PASSWORD);
+        return  parentRepository.loginPassed(user, PasswordHash.hash(password)) == 1;
     }
 
     public JSONObject setExp(String data) throws NoSuchAlgorithmException, JsonProcessingException {
         JSONObject dataObject = new JSONObject(data);
         String user = dataObject.getString(USERNAME);
         String password = dataObject.getString(PASSWORD);
-        String character = dataObject.getString("character");
-        Task task = dataObject.getEnum(Task.class, "task");
+        String character = dataObject.getString(CHARACTER);
+        Task task = dataObject.getEnum(Task.class, TASK);
         JSONObject levelObject;
         if (userRepository.loginPassed(user, PasswordHash.hash(password)) == 1) {
             List<Level> levelList = levelRepository.getLevel(user);
@@ -120,7 +129,7 @@ public class DataParser {
         String password = dataObject.getString(PASSWORD);
         JSONObject child = dataObject.getJSONObject(USER);
         String childPassword = child.getString(PASSWORD);
-        if (login(child.toString()) && parentRepository.parentExists(parent) == 0) {
+        if (userLogin(child.toString()) && parentRepository.parentExists(parent) == 0) {
             dataObject.put(PASSWORD, PasswordHash.hash(password));
             child.put(PASSWORD, PasswordHash.hash(childPassword));
             dataObject.remove(USER);
@@ -131,6 +140,35 @@ public class DataParser {
             return true;
         } else {
             return false;
+        }
+    }
+    public String startTask(String data) throws NoSuchAlgorithmException {
+        JSONObject dataObject = new JSONObject(data);
+        JSONObject userObject = dataObject.getJSONObject(USER);
+        JSONArray taskArray = new JSONArray(dataObject.getJSONArray("tasks"));
+        String user = userObject.getString(USERNAME);
+        if(userLogin(userObject.toString())){
+            User u = userRepository.getUserByName(user);
+            List<Task> tempList = new ArrayList<>();
+            for(Object json : taskArray){
+                tempList.add(((JSONObject)json).getEnum(Task.class, "task"));
+            }
+            u.setTasklist(tempList);
+            return dataObject.toString();
+        }
+        return "";
+    }
+    public String getUserTaskList(String data) throws NoSuchAlgorithmException {
+        JSONObject dataObject = new JSONObject(data);
+        JSONObject parentObject = dataObject.getJSONObject(PARENT);
+        String user = parentObject.getString(USERNAME);
+        if(parentLogin(parentObject.toString())){
+            User userObject = parentRepository.getUserFromParent(user);
+            Parent parent = parentRepository.getParentFromName(USERNAME);
+            parent.setTaskList(userObject.getTasklist());
+            return parent.getTaskList().toString();
+        }else{
+            return "";
         }
     }
 }
