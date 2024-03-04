@@ -10,4 +10,6 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
     int loginPassed(String name, String password);
     @Query(value = "SELECT * FROM parent WHERE user_name = ?1", nativeQuery = true)
     Parent getParentFromName(String name);
+    @Query(value = "SELECT task_list FROM parent WHERE user_name = ?1", nativeQuery = true)
+    String getParentTaskList(String name);
 }
