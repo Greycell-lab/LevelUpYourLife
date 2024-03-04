@@ -1,9 +1,6 @@
 package de.domesoft.levelupapi.entity;
 
-import de.domesoft.levelupapi.task.Task;
 import jakarta.persistence.*;
-
-import java.util.List;
 
 @SuppressWarnings("unused")
 @Entity
@@ -14,14 +11,14 @@ public class User {
     private Long id;
     private String user_name;
     private String password;
-    private List<Task> tasklist;
+    private String taskList;
 
-    public List<Task> getTasklist() {
-        return tasklist;
+    public String getTasklist() {
+        return taskList;
     }
 
-    public void setTasklist(List<Task> tasklist) {
-        this.tasklist = tasklist;
+    public void setTasklist(String tasklist) {
+        this.taskList = tasklist;
     }
 
     public Long getId() {

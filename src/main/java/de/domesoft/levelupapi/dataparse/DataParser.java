@@ -145,15 +145,12 @@ public class DataParser {
     public String startTask(String data) throws NoSuchAlgorithmException {
         JSONObject dataObject = new JSONObject(data);
         JSONObject userObject = dataObject.getJSONObject(USER);
-        JSONArray taskArray = new JSONArray(dataObject.getJSONArray("tasks"));
+        JSONObject taskList = dataObject.getJSONObject("tasks");
         String user = userObject.getString(USERNAME);
         if(userLogin(userObject.toString())){
             User u = userRepository.getUserByName(user);
-            List<Task> tempList = new ArrayList<>();
-            for(Object json : taskArray){
-                tempList.add(((JSONObject)json).getEnum(Task.class, "task"));
-            }
-            u.setTasklist(tempList);
+            u.setTasklist(taskList.toString());
+            userRepository.save(u);
             return dataObject.toString();
         }
         return "";
@@ -163,10 +160,11 @@ public class DataParser {
         JSONObject parentObject = dataObject.getJSONObject(PARENT);
         String user = parentObject.getString(USERNAME);
         if(parentLogin(parentObject.toString())){
-            User userObject = parentRepository.getUserFromParent(user);
-            Parent parent = parentRepository.getParentFromName(USERNAME);
+            User userObject = userRepository.getUserFromParent(user);
+            Parent parent = parentRepository.getParentFromName(user);
             parent.setTaskList(userObject.getTasklist());
-            return parent.getTaskList().toString();
+            parentRepository.save(parent);
+            return parent.getTaskList();
         }else{
             return "";
         }

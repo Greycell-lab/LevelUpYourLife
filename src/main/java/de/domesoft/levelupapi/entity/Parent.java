@@ -17,16 +17,13 @@ public class Parent {
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-    private List<Task> taskList;
-
-    public List<Task> getTaskList() {
+    private String taskList;
+    public String getTaskList() {
         return taskList;
     }
-
-    public void setTaskList(List<Task> taskList) {
+    public void setTaskList(String taskList) {
         this.taskList = taskList;
     }
-
     public Long getId() {
         return id;
     }
