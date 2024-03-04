@@ -140,11 +140,16 @@ public class DataParser {
     public String startTask(String data) throws NoSuchAlgorithmException {
         JSONObject dataObject = new JSONObject(data);
         JSONObject userObject = dataObject.getJSONObject(USER);
-        JSONArray taskList = dataObject.getJSONArray("tasks");
+        String task = dataObject.getString("task");
         String user = userObject.getString(USERNAME);
         if(userLogin(userObject.toString())){
             User u = userRepository.getUserByName(user);
-            u.setTasklist(taskList.toString());
+            String taskList = u.getTasklist();
+            JSONArray tasks = new JSONArray(taskList);
+            if(!taskList.contains(task)){
+                tasks.put(task);
+            }
+            u.setTasklist(tasks.toString());
             userRepository.save(u);
             return dataObject.toString();
         }
