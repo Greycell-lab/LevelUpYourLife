@@ -12,6 +12,13 @@ public class User {
     private String user_name;
     private String password;
     private String taskList;
+    private String power;
+    public String getPower() {
+        return power;
+    }
+    public void setPower(String power) {
+        this.power = power;
+    }
 
     public String getTasklist() {
         return taskList;

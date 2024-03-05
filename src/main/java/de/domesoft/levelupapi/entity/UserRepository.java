@@ -1,5 +1,6 @@
 package de.domesoft.levelupapi.entity;
 
+import org.json.JSONArray;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,4 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     int userExists(String name);
     @Query(value = "SELECT * FROM user WHERE id = (SELECT user_id FROM parent WHERE user_name = ?1 LIMIT 1)", nativeQuery = true)
     User getUserFromParent(String name);
+    @Query(value = "SELECT power FROM user WHERE user_name = ?1", nativeQuery = true)
+    String getPowers(String name);
 }

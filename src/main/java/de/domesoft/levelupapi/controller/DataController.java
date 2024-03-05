@@ -57,4 +57,8 @@ public class DataController {
     public String acceptTask(@RequestBody String data) throws NoSuchAlgorithmException{
         return dataParser.acceptTask(data);
     }
+    @PostMapping("/getUserPower")
+    public String getUserPower(@RequestBody String data) throws NoSuchAlgorithmException{
+        return dataParser.getUserPower(data);
+    }
 }

@@ -2,6 +2,7 @@ package de.domesoft.levelupapi.dataparse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.domesoft.levelupapi.task.Power;
 import de.domesoft.levelupapi.tools.PasswordHash;
 import de.domesoft.levelupapi.task.Task;
 import de.domesoft.levelupapi.entity.*;
@@ -65,8 +66,22 @@ public class DataParser {
         String password = dataObject.getString(PASSWORD);
         if (userRepository.loginPassed(user, PasswordHash.hash(password)) == 1) {
             Level level = levelRepository.getLevel(user);
+            JSONArray powers;
+            if(userRepository.getPowers(user) == null){
+                powers = new JSONArray();
+            }else{
+                powers = new JSONArray(userRepository.getPowers(user));
+            }
+            for(Power p : Power.values()){
+                if(level.getLevel() >= p.getLevel() && !powers.toString().contains(p.toString())){
+                    powers.put(p.toString());
+                }
+            }
+            User userObject = userRepository.getUserByName(user);
+            userObject.setPower(powers.toString());
+            userRepository.save(userObject);
             JSONObject levelObject = new JSONObject(mapper.writeValueAsString(level));
-            levelObject.remove("user");
+            levelObject.remove(USER);
             return levelObject.toString();
         } else {
             return "";
@@ -195,5 +210,16 @@ public class DataParser {
             return parent.getTaskList();
         }
         return "";
+    }
+    public String getUserPower(String data) throws NoSuchAlgorithmException{
+        JSONObject dataObject = new JSONObject(data);
+        String user = dataObject.getString(USERNAME);
+        String password = dataObject.getString(PASSWORD);
+        if(userRepository.loginPassed(user, PasswordHash.hash(password)) == 1){
+            User userObject = userRepository.getUserByName(user);
+            return userObject.getPower();
+        }else{
+            return new JSONArray().toString();
+        }
     }
 }
