@@ -20,7 +20,6 @@ public class DataParser {
     private final String USERNAME = "user_name";
     private final String USER = "user";
     private final String PASSWORD = "password";
-    private final String CHARACTER = "character";
     private final String TASK = "task";
     private final String PARENT = "parent";
     ObjectMapper mapper = new ObjectMapper();
@@ -134,7 +133,7 @@ public class DataParser {
         String user = userObject.getString(USERNAME);
         if(userLogin(userObject.toString())){
             User u = userRepository.getUserByName(user);
-            JSONArray taskList = new JSONArray();
+            JSONArray taskList = new JSONArray(u.getTasklist());
             if(u.getTasklist() == null) {
                 u.setTasklist(taskList.toString());
             }
@@ -182,6 +181,10 @@ public class DataParser {
                     taskArray.remove(i);
                     Level level = levelRepository.getLevel(userObject.getUser_name());
                     level.setExp(level.getExp() + acceptedTask.getExp());
+                    if(level.getExp() / 1000 == 1){
+                        level.setLevel(level.getLevel() + 1);
+                        level.setExp(level.getExp() % 1000);
+                    }
                     levelRepository.save(level);
                 }
             }
