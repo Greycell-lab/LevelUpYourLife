@@ -60,21 +60,17 @@ public class DataParser {
             return false;
         }
     }
-    public JSONArray getLevelsByUser(String data) throws NoSuchAlgorithmException, JsonProcessingException {
+    public String getLevelByUser(String data) throws NoSuchAlgorithmException, JsonProcessingException {
         JSONObject dataObject = new JSONObject(data);
         String user = dataObject.getString(USERNAME);
         String password = dataObject.getString(PASSWORD);
-        JSONArray levelArray = new JSONArray();
         if (userRepository.loginPassed(user, PasswordHash.hash(password)) == 1) {
-            List<Level> levelList = levelRepository.getLevel(user);
-            for (Level level : levelList) {
-                JSONObject temp = new JSONObject(mapper.writeValueAsString(level));
-                temp.remove(USER);
-                levelArray.put(temp);
-            }
-            return levelArray;
+            Level level = levelRepository.getLevel(user);
+            JSONObject levelObject = new JSONObject(mapper.writeValueAsString(level));
+            levelObject.remove("user");
+            return levelObject.toString();
         } else {
-            return new JSONArray();
+            return "";
         }
     }
     public boolean userLogin(String data) throws NoSuchAlgorithmException {
@@ -93,17 +89,11 @@ public class DataParser {
         JSONObject dataObject = new JSONObject(data);
         String user = dataObject.getString(USERNAME);
         String password = dataObject.getString(PASSWORD);
-        String character = dataObject.getString(CHARACTER);
         Task task = dataObject.getEnum(Task.class, TASK);
         JSONObject levelObject;
         if (userRepository.loginPassed(user, PasswordHash.hash(password)) == 1) {
-            List<Level> levelList = levelRepository.getLevel(user);
-            Level level = null;
-            for (Level l : levelList) {
-                if (l.getName().equals(character)) {
-                    level = l;
-                }
-            }
+            Level level;
+            level = levelRepository.getLevel(user);
             if (level != null) {
                 level.setExp(level.getExp() + task.getExp());
                 levelRepository.save(level);
@@ -144,12 +134,20 @@ public class DataParser {
         String user = userObject.getString(USERNAME);
         if(userLogin(userObject.toString())){
             User u = userRepository.getUserByName(user);
-            String taskList = u.getTasklist();
-            JSONArray tasks = new JSONArray(taskList);
-            if(!taskList.contains(task)){
-                tasks.put(task);
+            JSONArray taskList = new JSONArray();
+            if(u.getTasklist() == null) {
+                u.setTasklist(taskList.toString());
             }
-            u.setTasklist(tasks.toString());
+            boolean taskAlreadyInUse = false;
+            for(int i=0;i<taskList.length(); i++){
+                if(taskList.get(i).equals(task)){
+                    taskAlreadyInUse = true;
+                }
+            }
+            if(!taskAlreadyInUse){
+                taskList.put(task);
+            }
+            u.setTasklist(taskList.toString());
             userRepository.save(u);
             return dataObject.toString();
         }
@@ -177,11 +175,14 @@ public class DataParser {
         if(parentLogin(parentObject.toString())) {
             Parent parent = parentRepository.getParentFromName(user);
             User userObject = userRepository.getUserFromParent(user);
-            String taskList = parentRepository.getParentTaskList(user);
+            String taskList = userObject.getTasklist();
             JSONArray taskArray = new JSONArray(taskList);
             for(int i=0;i<taskArray.length();i++){
                 if(taskArray.get(i).equals(acceptedTask.name())){
                     taskArray.remove(i);
+                    Level level = levelRepository.getLevel(userObject.getUser_name());
+                    level.setExp(level.getExp() + acceptedTask.getExp());
+                    levelRepository.save(level);
                 }
             }
             parent.setTaskList(taskArray.toString());
