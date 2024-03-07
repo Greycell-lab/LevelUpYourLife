@@ -1,9 +1,6 @@
 package de.domesoft.levelupapi.entity;
 
-import de.domesoft.levelupapi.task.Task;
 import jakarta.persistence.*;
-
-import java.util.List;
 
 @SuppressWarnings("unused")
 @Entity
