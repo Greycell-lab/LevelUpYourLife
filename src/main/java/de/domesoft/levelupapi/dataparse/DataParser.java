@@ -2,6 +2,7 @@ package de.domesoft.levelupapi.dataparse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.domesoft.levelupapi.dto.UserDTO;
 import de.domesoft.levelupapi.task.Power;
 import de.domesoft.levelupapi.tools.PasswordHash;
 import de.domesoft.levelupapi.task.Task;
@@ -30,6 +31,8 @@ public class DataParser {
     LevelRepository levelRepository;
     @Autowired
     ParentRepository parentRepository;
+    @Autowired
+    ObjectMapper objectMapper;
 
     public JSONObject postNewLevel(String data) throws NoSuchAlgorithmException, JsonProcessingException {
         JSONObject dataObject = new JSONObject(data);
@@ -47,17 +50,46 @@ public class DataParser {
             return new JSONObject();
         }
     }
-
-    public boolean postNewUser(String data) throws NoSuchAlgorithmException, JsonProcessingException {
-        JSONObject dataObject = new JSONObject(data);
-        String user = dataObject.getString(USERNAME);
-        String password = dataObject.getString(PASSWORD);
-        if (userRepository.userExists(user) == 0) {
-            dataObject.put(PASSWORD, PasswordHash.hash(password));
-            userRepository.save(mapper.readValue(dataObject.toString(), User.class));
-            return true;
-        } else {
+    //New with DTO Classes
+    public boolean newUser(String data) {
+        try {
+            UserDTO userDTO = objectMapper.readValue(data, UserDTO.class);
+            if (userRepository.userExists(userDTO.getUser_name()) == UserStatus.USER_NOT_FOUND.getStatus()) {
+                User user = new User();
+                user.setUser_name(userDTO.getUser_name());
+                user.setPassword(PasswordHash.hash(userDTO.getPassword()));
+                user.setTasklist("[]");
+                user.setPower("[]");
+                userRepository.save(user);
+                return true;
+            }else{
+                return false;
+            }
+        }catch(JsonProcessingException ex){
+            ex.printStackTrace();
             return false;
+        }catch(NoSuchAlgorithmException ex){
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    //New with DTO Classes
+    public String getLevel(String data){
+        try{
+            UserDTO userDTO = objectMapper.readValue(data, UserDTO.class);
+            if(userRepository.loginPassed(userDTO.getUser_name(), PasswordHash.hash(userDTO.getPassword())) == 1){
+                Level level = levelRepository.getLevel(userDTO.getUser_name());
+                level.setUser(null);
+                return objectMapper.writeValueAsString(level);
+            }else{
+                return null;
+            }
+        }catch(JsonProcessingException ex){
+            ex.printStackTrace();
+            return null;
+        }catch(NoSuchAlgorithmException ex){
+            ex.printStackTrace();
+            return null;
         }
     }
     public String getLevelByUser(String data) throws NoSuchAlgorithmException, JsonProcessingException {
@@ -99,6 +131,7 @@ public class DataParser {
         String password = dataObject.getString(PASSWORD);
         return  parentRepository.loginPassed(user, PasswordHash.hash(password)) == 1;
     }
+
     public JSONObject setExp(String data) throws NoSuchAlgorithmException, JsonProcessingException {
         JSONObject dataObject = new JSONObject(data);
         String user = dataObject.getString(USERNAME);
