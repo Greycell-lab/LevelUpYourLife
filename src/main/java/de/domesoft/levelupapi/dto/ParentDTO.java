@@ -1,48 +1,51 @@
-package de.domesoft.levelupapi.entity;
+package de.domesoft.levelupapi.dto;
 
-import jakarta.persistence.*;
+import de.domesoft.levelupapi.entity.User;
 
-@SuppressWarnings("unused")
-@Entity
-@Table(name = "parent")
-public class Parent {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class ParentDTO {
     private Long id;
     private String user_name;
     private String password;
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
     private String taskList;
-    public String getTaskList() {
-        return taskList;
-    }
-    public void setTaskList(String taskList) {
-        this.taskList = taskList;
-    }
+
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getUser_name() {
         return user_name;
     }
+
     public void setUser_name(String user_name) {
         this.user_name = user_name;
     }
+
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
+
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getTaskList() {
+        return taskList;
+    }
+
+    public void setTaskList(String taskList) {
+        this.taskList = taskList;
     }
 }

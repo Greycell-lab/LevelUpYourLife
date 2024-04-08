@@ -18,7 +18,7 @@ public class DataController {
     @Autowired
     DataParser dataParser;
     @PostMapping("/getLevelData")
-    public String getLevelData(@RequestBody String data) throws NoSuchAlgorithmException, JsonProcessingException {
+    public String getLevelData(@RequestBody String data) {
         return dataParser.getLevel(data);
     }
     @PostMapping("/postLevelData")
@@ -30,20 +30,16 @@ public class DataController {
         return dataParser.userLogin(data);
     }
     @PostMapping("/addUser")
-    public boolean addUser(@RequestBody String data) throws Exception {
-        return dataParser.newUser(data);
-    }
-    @PostMapping("/setExp")
-    public String setExp(@RequestBody String data) throws NoSuchAlgorithmException, JsonProcessingException {
-        return dataParser.setExp(data).toString();
+    public boolean addUser(@RequestBody String data) {
+        return dataParser.addUser(data);
     }
     @GetMapping("/getTasks")
     public List<Task> getTasks(){
         return dataParser.getTaskList();
     }
     @PostMapping("/addParent")
-    public boolean addParent(@RequestBody String data) throws NoSuchAlgorithmException, JsonProcessingException {
-        return dataParser.postNewParent(data);
+    public boolean addParent(@RequestBody String data)  {
+        return dataParser.addParent(data);
     }
     @PostMapping("/startTask")
     public String startTask(@RequestBody String data) throws NoSuchAlgorithmException {
