@@ -22,8 +22,8 @@ public class DataController {
         return dataParser.getLevel(data);
     }
     @PostMapping("/postLevelData")
-    public String postLevelData(@RequestBody String data) throws NoSuchAlgorithmException, JsonProcessingException {
-        return dataParser.postNewLevel(data).toString();
+    public String postLevelData(@RequestBody String data) {
+        return dataParser.postLevel(data);
     }
     @GetMapping("/login")
     public boolean login(@RequestBody String data)throws NoSuchAlgorithmException {
