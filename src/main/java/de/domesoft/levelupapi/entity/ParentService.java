@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service;
 @SuppressWarnings("unused")
 @Service
 public class ParentService {
-    private final ParentRepository parentRepository;
     @Autowired
     public ParentService(ParentRepository parentRepository) {
-        this.parentRepository = parentRepository;
     }
 }

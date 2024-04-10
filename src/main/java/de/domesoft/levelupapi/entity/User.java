@@ -11,7 +11,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String user_name;
+    private String userName;
     private String password;
     private String taskList;
     private String power;
@@ -37,8 +37,8 @@ public class User {
         return taskList;
     }
 
-    public void setTaskList(String tasklist) {
-        this.taskList = tasklist;
+    public void setTaskList(String taskList) {
+        this.taskList = taskList;
     }
 
     public Long getId() {
@@ -49,12 +49,12 @@ public class User {
         this.id = id;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {

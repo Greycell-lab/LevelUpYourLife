@@ -1,13 +1,13 @@
 package de.domesoft.levelupapi.dto;
 
 import de.domesoft.levelupapi.entity.User;
-import org.json.JSONArray;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ParentDTO {
     private Long id;
-    private String user_name;
+    private String userName;
     private String password;
     private User user;
     private List<String> taskList;
@@ -20,12 +20,12 @@ public class ParentDTO {
         this.id = id;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {

@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service;
 @SuppressWarnings("unused")
 @Service
 public class UserService {
-    private final UserRepository userRepository;
     @Autowired
     public UserService(UserRepository userRepository){
-        this.userRepository = userRepository;
     }
 }

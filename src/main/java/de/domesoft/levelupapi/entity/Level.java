@@ -9,7 +9,7 @@ public class Level {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private Long level;
+    private Long petLevel;
     private Long exp;
     private String pet;
     @ManyToOne(cascade = CascadeType.MERGE)
@@ -45,12 +45,12 @@ public class Level {
         this.name = name;
     }
 
-    public Long getLevel() {
-        return level;
+    public Long getPetLevel() {
+        return petLevel;
     }
 
-    public void setLevel(Long level) {
-        this.level = level;
+    public void setPetLevel(Long petLevel) {
+        this.petLevel = petLevel;
     }
 
     public Long getExp() {
