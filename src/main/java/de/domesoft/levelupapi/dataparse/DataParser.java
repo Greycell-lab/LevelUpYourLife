@@ -145,11 +145,12 @@ public class DataParser {
             return false;
         }
     }
+
     //Overloaded Method
-    public boolean parentLogin(ParentDTO parentDTO){
-        try{
+    public boolean parentLogin(ParentDTO parentDTO) {
+        try {
             return parentRepository.loginPassed(parentDTO.getUser_name(), PasswordHash.hash(parentDTO.getPassword())) == 1;
-        } catch(NoSuchAlgorithmException ex){
+        } catch (NoSuchAlgorithmException ex) {
             ex.printStackTrace();
             return false;
         }
@@ -200,7 +201,7 @@ public class DataParser {
                     }
                     user.setTaskList(userTaskArray.toString());
                     userRepository.save(user);
-                    for(Parent parent : user.getParents()){
+                    for (Parent parent : user.getParents()) {
                         parent.setTaskList(user.getTaskList());
                         parentRepository.save(parent);
                     }
@@ -212,6 +213,7 @@ public class DataParser {
         }
         return null;
     }
+
     //New with DTO Classes
     public String getUserTask(String data) {
         try {
@@ -225,35 +227,34 @@ public class DataParser {
             } else {
                 return null;
             }
-        }catch(JsonProcessingException ex){
+        } catch (JsonProcessingException ex) {
             ex.printStackTrace();
             return null;
-        }catch(NoSuchAlgorithmException ex){
+        } catch (NoSuchAlgorithmException ex) {
             ex.printStackTrace();
             return null;
         }
     }
 
     //New with DTO Classes
-    //TODO NOT FINISHED! POWER NOT WORKING
-    public String acceptTask(String data){
-        try{
+    public String acceptTask(String data) {
+        try {
             ParentDTO parentDTO = objectMapper.readValue(data, ParentDTO.class);
-            if(parentLogin(data)) {
+            if (parentLogin(data)) {
                 Parent parent = parentRepository.getParentFromName(parentDTO.getUser_name());
                 User user = userRepository.getUserByName(parentDTO.getUser().getUser_name());
                 Level level = levelRepository.getLevelByUserName(user.getUser_name());
                 JSONArray userTaskList = new JSONArray(user.getTaskList());
                 JSONArray taskToRemoveList = new JSONArray(new JSONObject(data).getJSONArray("taskList"));
-                for(int i=0;i<taskToRemoveList.length();i++){
+                for (int i = 0; i < taskToRemoveList.length(); i++) {
                     String taskToRemove = taskToRemoveList.getString(i);
-                    for(int j=0;j<userTaskList.length();j++){
+                    for (int j = 0; j < userTaskList.length(); j++) {
                         String userTask = userTaskList.getString(j);
-                        if(taskToRemove.equals(userTask)){
+                        if (taskToRemove.equals(userTask)) {
                             userTaskList.remove(j);
                             Task task = Task.valueOf(userTask);
                             level.setExp(level.getExp() + task.getExp());
-                            if(level.getExp() / 1000 == 1){
+                            if (level.getExp() / 1000 == 1) {
                                 level.setLevel(level.getLevel() + 1);
                                 level.setExp(level.getExp() % 1000);
                             }
@@ -262,34 +263,32 @@ public class DataParser {
                     }
                 }
                 JSONArray userPower = new JSONArray(user.getPower());
-                for(Power power : Power.values()){
-                    for(int i=0;i<userPower.length();i++){
-                        if(level.getLevel() >= power.getLevel() && !userPower.toString().contains(power.toString())){
-                            userPower.put(power.toString());
-                        }
+                for (Power power : Power.values()) {
+                    if (level.getLevel() >= power.getLevel() && !userPower.toString().contains(power.toString())) {
+                        userPower.put(power.toString());
                     }
                 }
-                System.out.println(userPower);
                 user.setPower(userPower.toString());
                 user.setTaskList(userTaskList.toString());
                 parent.setTaskList(user.getTaskList());
                 parent.setUser(user);
                 parentRepository.save(parent);
                 return user.getTaskList();
-            }else{
+            } else {
                 return null;
             }
-        }catch(JsonProcessingException ex){
+        } catch (JsonProcessingException ex) {
             ex.printStackTrace();
             return null;
-        }catch(NoSuchAlgorithmException ex){
+        } catch (NoSuchAlgorithmException ex) {
             ex.printStackTrace();
             return null;
         }
     }
+
     //New with DTO Classes
     public String getUserPower(String data) throws NoSuchAlgorithmException {
-        try{
+        try {
             UserDTO userDTO = objectMapper.readValue(data, UserDTO.class);
             if (userRepository.loginPassed(userDTO.getUser_name(), PasswordHash.hash(userDTO.getPassword())) == 1) {
                 User user = userRepository.getUserByName(userDTO.getUser_name());
@@ -297,11 +296,12 @@ public class DataParser {
             } else {
                 return new JSONArray().toString();
             }
-        }catch(JsonProcessingException ex){
+        } catch (JsonProcessingException ex) {
             ex.printStackTrace();
             return null;
         }
     }
+
     public List<Task> getTaskList() {
         return new ArrayList<>(Arrays.asList(Task.class.getEnumConstants()));
     }
