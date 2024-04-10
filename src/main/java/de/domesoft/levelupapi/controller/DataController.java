@@ -1,6 +1,5 @@
 package de.domesoft.levelupapi.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import de.domesoft.levelupapi.dataparse.DataParser;
 import de.domesoft.levelupapi.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +19,13 @@ public class DataController {
     public DataController(DataParser dataParser){
         this.dataParser = dataParser;
     }
-    @PostMapping("/getLevelData")
+    @GetMapping("/getLevelData")
     public String getLevelData(@RequestBody String data) {
         return dataParser.getLevel(data);
     }
     @PostMapping("/postLevelData")
     public String postLevelData(@RequestBody String data) {
         return dataParser.postLevel(data);
-    }
-    @GetMapping("/login")
-    public boolean login(@RequestBody String data)throws NoSuchAlgorithmException {
-        return dataParser.userLogin(data);
     }
     @PostMapping("/addUser")
     public boolean addUser(@RequestBody String data) {

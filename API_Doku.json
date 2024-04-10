@@ -1,0 +1,62 @@
+[
+  "/getLevelData",
+  {
+    "userName": "username",
+    "password": "password"
+  },
+  "/postLevelData",
+  {
+    "name": "pet name",
+    "exp": 0,
+    "level": 1,
+    "pet": "png image",
+    "user":
+    {
+      "userName": "username",
+      "password": "password"
+    }
+  },
+  "/addUser",
+  {
+    "userName": "username",
+    "password": "password"
+  },
+  "/addParent",
+  {
+    "userName": "parent username",
+    "password": "parent password",
+    "user": {
+      "userName": "username",
+      "password": "password"
+    }
+  },
+  "/getTasks",
+  {
+
+  },
+  "/getUserTask",
+  {
+    "userName": "username",
+    "password": "password"
+  },
+  "/startTask",
+  {
+    "userName": "username",
+    "password": "password",
+    "doneTasks": ["task1", "task2", "task3"]
+  },
+  "/acceptTask",
+  {
+    "userName": "parent username",
+    "password": "parent password",
+    "taskList": ["task1", "task2", "task3"],
+    "user": {
+      "userName": "name"
+    }
+  },
+  "/getUserPower",
+  {
+    "userName": "name",
+    "password": "password"
+  }
+]
