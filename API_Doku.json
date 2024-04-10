@@ -4,6 +4,7 @@
     "userName": "username",
     "password": "password"
   },
+
   "/postLevelData",
   {
     "name": "pet name",
@@ -16,11 +17,13 @@
       "password": "password"
     }
   },
+
   "/addUser",
   {
     "userName": "username",
     "password": "password"
   },
+
   "/addParent",
   {
     "userName": "parent username",
@@ -30,21 +33,25 @@
       "password": "password"
     }
   },
+
   "/getTasks",
   {
 
   },
+
   "/getUserTask",
   {
     "userName": "username",
     "password": "password"
   },
+
   "/startTask",
   {
     "userName": "username",
     "password": "password",
     "doneTasks": ["task1", "task2", "task3"]
   },
+
   "/acceptTask",
   {
     "userName": "parent username",
@@ -54,6 +61,7 @@
       "userName": "name"
     }
   },
+
   "/getUserPower",
   {
     "userName": "name",
