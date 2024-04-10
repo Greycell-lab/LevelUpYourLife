@@ -12,6 +12,8 @@ import de.domesoft.levelupapi.task.Task;
 import de.domesoft.levelupapi.entity.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,11 +24,9 @@ import java.util.List;
 
 @Component
 public class DataParser {
-    private final String USERNAME = "user_name";
-    private final String USER = "user";
-    private final String PASSWORD = "password";
-    private final String PARENT = "parent";
-    ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
+    //private static final Logger logger = LoggerFactory.getLogger(DataParser.class);
+
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -56,7 +56,7 @@ public class DataParser {
                 return null;
             }
         } catch (JsonProcessingException ex) {
-            ex.printStackTrace();
+            //logger.error("Something is wrong with the JSON-Data \n" + ex);
             return null;
         } catch (NoSuchAlgorithmException ex) {
             ex.printStackTrace();
