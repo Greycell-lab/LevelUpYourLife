@@ -1,13 +1,16 @@
 package de.domesoft.levelupapi.dto;
 
 import de.domesoft.levelupapi.entity.User;
+import org.json.JSONArray;
+
+import java.util.List;
 
 public class ParentDTO {
     private Long id;
     private String user_name;
     private String password;
     private User user;
-    private String taskList;
+    private List<String> taskList;
 
     public Long getId() {
         return id;
@@ -41,11 +44,11 @@ public class ParentDTO {
         this.user = user;
     }
 
-    public String getTaskList() {
+    public List<String> getTaskList() {
         return taskList;
     }
 
-    public void setTaskList(String taskList) {
+    public void setTaskList(List<String> taskList) {
         this.taskList = taskList;
     }
 }

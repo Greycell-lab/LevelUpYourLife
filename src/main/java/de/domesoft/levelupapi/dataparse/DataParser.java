@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.domesoft.levelupapi.dto.LevelDTO;
 import de.domesoft.levelupapi.dto.ParentDTO;
 import de.domesoft.levelupapi.dto.UserDTO;
+import de.domesoft.levelupapi.dto.UserTaskDTO;
 import de.domesoft.levelupapi.task.Power;
 import de.domesoft.levelupapi.tools.PasswordHash;
 import de.domesoft.levelupapi.task.Task;
@@ -144,13 +145,22 @@ public class DataParser {
             return false;
         }
     }
+    //Overloaded Method
+    public boolean parentLogin(ParentDTO parentDTO){
+        try{
+            return parentRepository.loginPassed(parentDTO.getUser_name(), PasswordHash.hash(parentDTO.getPassword())) == 1;
+        } catch(NoSuchAlgorithmException ex){
+            ex.printStackTrace();
+            return false;
+        }
+    }
 
     //New with DTO Classes
     public boolean addParent(String data) {
         try {
             ParentDTO parentDTO = objectMapper.readValue(data, ParentDTO.class);
             User user = userRepository.getUserByName(parentDTO.getUser().getUser_name());
-            if (userRepository.loginPassed(user.getUser_name(), parentDTO.getUser().getPassword()) == 1
+            if (userRepository.loginPassed(user.getUser_name(), PasswordHash.hash(parentDTO.getUser().getPassword())) == 1
                     && parentRepository.parentExists(parentDTO.getUser_name()) == 0) {
                 Parent parent = new Parent();
                 parent.setUser(user);
@@ -172,28 +182,28 @@ public class DataParser {
     }
 
     //New with DTO Classes
-    //TODO NOT WORKING
     public String startTask(String data) {
         try {
-            UserDTO userDTO = objectMapper.readValue(new JSONObject(data).getJSONObject("user").toString(), UserDTO.class);
-            if (userRepository.loginPassed(userDTO.getUser_name(), PasswordHash.hash(userDTO.getPassword())) == 1) {
-                JSONObject dataObject = new JSONObject(data);
-                User user = userRepository.getUserByName(userDTO.getUser_name());
-                JSONArray tasksDone = dataObject.getJSONArray("tasks");
-                JSONArray userTasks = new JSONArray(user.getTaskList());
-
+            UserTaskDTO userTaskDTO = objectMapper.readValue(data, UserTaskDTO.class);
+            if (userRepository.loginPassed(userTaskDTO.getUsername(), PasswordHash.hash(userTaskDTO.getPassword())) == 1) {
+                User user = userRepository.getUserByName(userTaskDTO.getUsername());
+                JSONArray userTaskArray = new JSONArray(user.getTaskList());
+                List<String> postedTasks = userTaskDTO.getDoneTasks();
                 if (user.getTaskList() == null) {
-                    user.setTaskList(tasksDone.toString());
+                    user.setTaskList(postedTasks.toString());
                 } else {
-                    for (int i = 0; i < tasksDone.length(); i++) {
-                        if (userTasks.toString().contains(tasksDone.get(i).toString())) {
-                            break;
-                        } else {
-                            userTasks.put(tasksDone.get(i));
+                    for (String postedTask : postedTasks) {
+
+                        if (!userTaskArray.toString().contains(postedTask)) {
+                            userTaskArray.put(postedTask);
                         }
                     }
-                    user.setTaskList(userTasks.toString());
+                    user.setTaskList(userTaskArray.toString());
                     userRepository.save(user);
+                    for(Parent parent : user.getParents()){
+                        parent.setTaskList(user.getTaskList());
+                        parentRepository.save(parent);
+                    }
                 }
 
             }
@@ -202,51 +212,64 @@ public class DataParser {
         }
         return null;
     }
-
-    public String startTaskTemp(String data) throws NoSuchAlgorithmException {
-        JSONObject dataObject = new JSONObject(data);
-        JSONObject userObject = dataObject.getJSONObject(USER);
-        String task = dataObject.getString("task");
-        String user = userObject.getString(USERNAME);
-        if (userLogin(userObject.toString())) {
-            User u = userRepository.getUserByName(user);
-            JSONArray taskList = new JSONArray(u.getTaskList());
-            if (u.getTaskList() == null) {
-                u.setTaskList(taskList.toString());
+    //New with DTO Classes
+    public String getUserTask(String data) {
+        try {
+            ParentDTO parentDTO = objectMapper.readValue(data, ParentDTO.class);
+            if (parentRepository.loginPassed(parentDTO.getUser_name(), PasswordHash.hash(parentDTO.getPassword())) == 1) {
+                Parent parent = parentRepository.getParentFromName(parentDTO.getUser_name());
+                User user = userRepository.getUserFromParent(parent.getUser_name());
+                parent.setTaskList(user.getTaskList());
+                parentRepository.save(parent);
+                return parent.getTaskList();
+            } else {
+                return null;
             }
-            boolean taskAlreadyInUse = false;
-            for (int i = 0; i < taskList.length(); i++) {
-                if (taskList.get(i).equals(task)) {
-                    taskAlreadyInUse = true;
-                    break;
+        }catch(JsonProcessingException ex){
+            ex.printStackTrace();
+            return null;
+        }catch(NoSuchAlgorithmException ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    //New with DTO Classes
+    public String acceptTask(String data){
+        try{
+            ParentDTO parentDTO = objectMapper.readValue(data, ParentDTO.class);
+            if(parentLogin(data)) {
+                Parent parent = parentRepository.getParentFromName(parentDTO.getUser_name());
+                User user = userRepository.getUserByName(parentDTO.getUser().getUser_name());
+                JSONArray userTaskList = new JSONArray(user.getTaskList());
+                JSONArray taskToRemoveList = new JSONArray(new JSONObject(data).getJSONArray("taskList"));
+                for(int i=0;i<taskToRemoveList.length();i++){
+                    String taskToRemove = taskToRemoveList.getString(i);
+                    for(int j=0;j<userTaskList.length();j++){
+                        String userTask = userTaskList.getString(j);
+                        if(taskToRemove.equals(userTask)){
+                            userTaskList.remove(j);
+                            break;
+                        }
+                    }
                 }
+                user.setTaskList(userTaskList.toString());
+                parent.setTaskList(user.getTaskList());
+                parent.setUser(user);
+                parentRepository.save(parent);
+                return user.getTaskList();
+            }else{
+                return null;
             }
-            if (!taskAlreadyInUse) {
-                taskList.put(task);
-            }
-            u.setTaskList(taskList.toString());
-            userRepository.save(u);
-            return dataObject.toString();
-        }
-        return "";
-    }
-
-    public String getUserTask(String data) throws NoSuchAlgorithmException {
-        JSONObject dataObject = new JSONObject(data);
-        JSONObject parentObject = dataObject.getJSONObject(PARENT);
-        String user = parentObject.getString(USERNAME);
-        if (parentLogin(parentObject.toString())) {
-            User userObject = userRepository.getUserFromParent(user);
-            Parent parent = parentRepository.getParentFromName(user);
-            parent.setTaskList(userObject.getTaskList());
-            parentRepository.save(parent);
-            return parent.getTaskList();
-        } else {
-            return "";
+        }catch(JsonProcessingException ex){
+            ex.printStackTrace();
+            return null;
+        }catch(NoSuchAlgorithmException ex){
+            ex.printStackTrace();
+            return null;
         }
     }
-
-    public String acceptTask(String data) throws NoSuchAlgorithmException {
+    public String acceptTasktemp(String data) throws NoSuchAlgorithmException {
         JSONObject dataObject = new JSONObject(data);
         JSONObject parentObject = dataObject.getJSONObject(PARENT);
         Task acceptedTask = parentObject.getEnum(Task.class, "task");

@@ -45,7 +45,7 @@ public class DataController {
     public String startTask(@RequestBody String data) throws NoSuchAlgorithmException {
         return dataParser.startTask(data);
     }
-    @PostMapping("/getUserTask")
+    @GetMapping("/getUserTask")
     public String getUserTask(@RequestBody String data) throws NoSuchAlgorithmException{
         return dataParser.getUserTask(data);
     }
