@@ -2,6 +2,7 @@ package de.domesoft.levelupapi.dto;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class UserTaskDTO {
     private String userName;
     private String password;

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.domesoft.levelupapi.dto.LevelDTO;
 import de.domesoft.levelupapi.dto.ParentDTO;
 import de.domesoft.levelupapi.dto.UserDTO;
-import de.domesoft.levelupapi.dto.UserTaskDTO;
 import de.domesoft.levelupapi.task.Power;
 import de.domesoft.levelupapi.tools.PasswordHash;
 import de.domesoft.levelupapi.task.Task;
@@ -272,7 +271,8 @@ public class DataParser {
             dataParserLogger.error(ex.getMessage());
         }
     }
-    public void setUserPower(User user, Level level){
+
+    public void setUserPower(User user, Level level) {
         user.setPower(new JSONArray().toString());
         JSONArray powerArray = new JSONArray();
         for (Power power : Power.values()) {
@@ -283,20 +283,22 @@ public class DataParser {
         user.setPower(powerArray.toString());
         userRepository.save(user);
     }
-    public String createLevelDTO(Level level){
+
+    public String createLevelDTO(Level level) {
         LevelDTO levelDTO = new LevelDTO();
         levelDTO.setLevel(level.getPetLevel());
         levelDTO.setName(level.getName());
         levelDTO.setPet(level.getPet());
         levelDTO.setExp(level.getExp());
-        try{
+        try {
             return objectMapper.writeValueAsString(levelDTO);
-        }catch(JsonProcessingException ex){
+        } catch (JsonProcessingException ex) {
             dataParserLogger.error(ex.getMessage());
             return null;
         }
     }
-    public Level taskAccepting(User user, Level level, JSONArray taskToRemoveList){
+
+    public Level taskAccepting(User user, Level level, JSONArray taskToRemoveList) {
         JSONArray userTaskList = new JSONArray(user.getTaskList());
         for (int i = 0; i < taskToRemoveList.length(); i++) {
             String taskToRemove = taskToRemoveList.getString(i);
