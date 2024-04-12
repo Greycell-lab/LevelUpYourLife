@@ -1,5 +1,7 @@
 package de.domesoft.levelupapi.dto;
 
+import java.util.List;
+
 @SuppressWarnings("unused")
 public class UserDTO {
     private Long id;
@@ -7,6 +9,23 @@ public class UserDTO {
     private String password;
     private String taskList;
     private String power;
+    private List<String> doneTasks;
+
+    public UserDTO() {
+    }
+
+    public UserDTO(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
+
+    public List<String> getDoneTasks() {
+        return doneTasks;
+    }
+
+    public void setDoneTasks(List<String> doneTasks) {
+        this.doneTasks = doneTasks;
+    }
 
     public Long getId() {
         return id;
