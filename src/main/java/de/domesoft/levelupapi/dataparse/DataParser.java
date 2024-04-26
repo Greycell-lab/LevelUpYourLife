@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
@@ -42,40 +43,41 @@ public class DataParser {
     }
 
     //New with DTO Classes
-    public boolean postLevel(String data) {
+    public ResponseEntity<String> postLevel(String data) {
         try {
             LevelDTO levelDTO = objectMapper.readValue(data, LevelDTO.class);
             UserDTO userDTO = new UserDTO(levelDTO.getUser().getUserName(), levelDTO.getUser().getPassword());
             if (userLogin(userDTO)) {
                 createLevel(userDTO, levelDTO);
-                return true;
+                return ResponseEntity.ok("Level created");
+            } else {
+                return accountException();
             }
-            return false;
         } catch (JsonProcessingException ex) {
             dataParserLogger.error(ex.getMessage());
-            return false;
+            return jsonException();
         }
     }
 
     //New with DTO Classes
-    public boolean addUser(String data) {
+    public ResponseEntity<String> addUser(String data) {
         try {
             UserDTO userDTO = objectMapper.readValue(data, UserDTO.class);
             if (!userExists(userDTO)) {
                 createUser(userDTO);
-                return true;
+                return ResponseEntity.ok("User created");
             } else {
-                return false;
+                return ResponseEntity.badRequest().body("User already exists");
             }
         } catch (JsonProcessingException ex) {
             dataParserLogger.error(ex.getMessage());
-            return false;
+            return jsonException();
         }
     }
 
 
     //New with DTO Classes
-    public String getLevel(String data) {
+    public ResponseEntity<String> getLevel(String data) {
         try {
             UserDTO userDTO = objectMapper.readValue(data, UserDTO.class);
             if (userLogin(userDTO)) {
@@ -83,36 +85,36 @@ public class DataParser {
                 Level level = levelRepository.getLevelByUserName(userDTO.getUserName());
                 String levelDTOString = createLevelDTO(level);
                 setUserPower(user, level);
-                return levelDTOString;
+                return ResponseEntity.ok(levelDTOString);
             } else {
-                return null;
+                return accountException();
             }
         } catch (JsonProcessingException ex) {
             dataParserLogger.error(ex.getMessage());
-            return null;
+            return jsonException();
         }
     }
 
     //New with DTO Classes
 
-    public boolean addParent(String data) {
+    public ResponseEntity<String> addParent(String data) {
         try {
             ParentDTO parentDTO = objectMapper.readValue(data, ParentDTO.class);
             UserDTO userDTO = new UserDTO(parentDTO.getUser().getUserName(), parentDTO.getUser().getPassword());
             if (userLogin(userDTO) && !parentExists(parentDTO)) {
                 createParent(parentDTO, userDTO);
-                return true;
+                return ResponseEntity.ok("Parent created");
             } else {
-                return false;
+                return accountException();
             }
         } catch (JsonProcessingException ex) {
             dataParserLogger.error(ex.getMessage());
-            return false;
+            return jsonException();
         }
     }
     //New with DTO Classes
 
-    public String startTask(String data) {
+    public ResponseEntity<String> startTask(String data) {
         try {
             UserDTO userDTO = objectMapper.readValue(data, UserDTO.class);
             if (userLogin(userDTO)) {
@@ -133,17 +135,18 @@ public class DataParser {
                     parent.setTaskList(user.getTaskList());
                     parentRepository.save(parent);
                 }
-                return userTaskArray.toString();
+                return ResponseEntity.ok(userTaskArray.toString());
+            } else {
+                return accountException();
             }
         } catch (JsonProcessingException ex) {
             dataParserLogger.error(ex.getMessage());
-            return null;
+            return jsonException();
         }
-        return null;
     }
     //New with DTO Classes
 
-    public String getUserTask(String data) {
+    public ResponseEntity<String> getUserTask(String data) {
         try {
             ParentDTO parentDTO = objectMapper.readValue(data, ParentDTO.class);
             if (parentLogin(parentDTO)) {
@@ -151,18 +154,18 @@ public class DataParser {
                 User user = userRepository.getUserFromParent(parent.getUserName());
                 parent.setTaskList(user.getTaskList());
                 parentRepository.save(parent);
-                return parent.getTaskList();
+                return ResponseEntity.ok(parent.getTaskList());
             } else {
-                return null;
+                return accountException();
             }
         } catch (JsonProcessingException ex) {
             dataParserLogger.error(ex.getMessage());
-            return null;
+            return jsonException();
         }
     }
     //New with DTO Classes
 
-    public String acceptTask(String data) {
+    public ResponseEntity<String> acceptTask(String data) {
         try {
             ParentDTO parentDTO = objectMapper.readValue(data, ParentDTO.class);
             if (parentLogin(parentDTO)) {
@@ -177,33 +180,34 @@ public class DataParser {
                 parent.setTaskList(user.getTaskList());
                 parent.setUser(user);
                 parentRepository.save(parent);
-                return user.getTaskList();
+                return ResponseEntity.ok(user.getTaskList());
+            }else{
+                return accountException();
             }
-            return null;
         } catch (JsonProcessingException ex) {
             dataParserLogger.error(ex.getMessage());
-            return null;
+            return jsonException();
         }
     }
     //New with DTO Classes
 
-    public String getUserPower(String data) {
+    public ResponseEntity<String> getUserPower(String data) {
         try {
             UserDTO userDTO = objectMapper.readValue(data, UserDTO.class);
-            if (userRepository.loginPassed(userDTO.getUserName(), PasswordHash.hash(userDTO.getPassword())) == 1) {
+            if (userLogin(userDTO)) {
                 User user = userRepository.getUserByName(userDTO.getUserName());
-                return user.getPower();
+                return ResponseEntity.ok(user.getPower());
             } else {
-                return new JSONArray().toString();
+                return accountException();
             }
-        } catch (JsonProcessingException | NoSuchAlgorithmException ex) {
+        } catch (JsonProcessingException ex) {
             dataParserLogger.error(ex.getMessage());
-            return null;
+            return jsonException();
         }
     }
 
-    public List<Task> getTaskList() {
-        return new ArrayList<>(Arrays.asList(Task.class.getEnumConstants()));
+    public ResponseEntity<List<Task>> getTaskList() {
+        return ResponseEntity.ok(new ArrayList<>(Arrays.asList(Task.class.getEnumConstants())));
     }
 
     //New with DTO Classes
@@ -319,5 +323,11 @@ public class DataParser {
         user.setTaskList(userTaskList.toString());
         level.setUser(user);
         return level;
+    }
+    private ResponseEntity<String> jsonException(){
+        return ResponseEntity.badRequest().body("JSON Data Error");
+    }
+    private ResponseEntity<String> accountException(){
+        return ResponseEntity.badRequest().body("Wrong password or Account does not exist");
     }
 }

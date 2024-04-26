@@ -3,6 +3,7 @@ package de.domesoft.levelupapi.controller;
 import de.domesoft.levelupapi.dataparse.DataParser;
 import de.domesoft.levelupapi.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,47 +22,47 @@ public class DataController {
     }
 
     @GetMapping("/getLevelData")
-    public String getLevelData(@RequestBody String data) {
+    public ResponseEntity<String> getLevelData(@RequestBody String data) {
         return dataParser.getLevel(data);
     }
 
     @PostMapping("/postLevelData")
-    public boolean postLevelData(@RequestBody String data) {
+    public ResponseEntity<String> postLevelData(@RequestBody String data) {
         return dataParser.postLevel(data);
     }
 
     @PostMapping("/addUser")
-    public boolean addUser(@RequestBody String data) {
+    public ResponseEntity<String> addUser(@RequestBody String data) {
         return dataParser.addUser(data);
     }
 
     @GetMapping("/getTasks")
-    public List<Task> getTasks() {
+    public ResponseEntity<List<Task>> getTasks() {
         return dataParser.getTaskList();
     }
 
     @PostMapping("/addParent")
-    public boolean addParent(@RequestBody String data) {
+    public ResponseEntity<String> addParent(@RequestBody String data) {
         return dataParser.addParent(data);
     }
 
     @PostMapping("/startTask")
-    public String startTask(@RequestBody String data) {
+    public ResponseEntity<String> startTask(@RequestBody String data) {
         return dataParser.startTask(data);
     }
 
     @GetMapping("/getUserTask")
-    public String getUserTask(@RequestBody String data) {
+    public ResponseEntity<String> getUserTask(@RequestBody String data) {
         return dataParser.getUserTask(data);
     }
 
     @PostMapping("/acceptTask")
-    public String acceptTask(@RequestBody String data) {
+    public ResponseEntity<String> acceptTask(@RequestBody String data) {
         return dataParser.acceptTask(data);
     }
 
     @PostMapping("/getUserPower")
-    public String getUserPower(@RequestBody String data) {
+    public ResponseEntity<String> getUserPower(@RequestBody String data) {
         return dataParser.getUserPower(data);
     }
 }
